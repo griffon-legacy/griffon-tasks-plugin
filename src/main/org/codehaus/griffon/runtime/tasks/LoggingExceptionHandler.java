@@ -26,7 +26,6 @@ import java.util.EventListener;
  * @since 01.04.11 22:17
  */
 public class LoggingExceptionHandler<T extends EventListener> implements ExceptionHandler<T> {
-
     private final Logger log;
     private boolean notifyOtherListeners = true;
 
@@ -52,7 +51,7 @@ public class LoggingExceptionHandler<T extends EventListener> implements Excepti
         return new LoggingExceptionHandler<T>(log);
     }
 
-    
+
     public boolean handleException(T listener, Throwable t) throws Throwable {
         log.error("Listener '" + listener + "' threw an exception: " + t.getMessage(), t);
         return notifyOtherListeners;

@@ -27,12 +27,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
- * Wraps the execution of a {@link griffon.plugins.tasks.Task} which is governed by a {@link TaskWorker}. This context holds
- * adds listener support. It registers itself as {@link java.beans.PropertyChangeListener} to the {@link TaskWorker}
+ * Wraps the execution of a {@link griffon.plugins.tasks.Task} which is governed by a {@link DefaultTaskWorker}. This context holds
+ * adds listener support. It registers itself as {@link java.beans.PropertyChangeListener} to the {@link DefaultTaskWorker}
  * object and translates the {@link griffon.util.UIThreadWorker} events to {@link griffon.plugins.tasks.TaskEvent}s.
  * <p/>
  * Each execution can be identified by a growing id. For retrieving task execution properties it delegates
- * to the wrapped {@link TaskWorker}.
+ * to the wrapped {@link DefaultTaskWorker}.
  *
  * @author <a href="mailto:eike.kettner@gmail.com">Eike Kettner</a>
  * @since 20.07.11 21:40
@@ -44,11 +44,11 @@ public class DefaultTaskContext implements TaskContext, PropertyChangeListener {
     private final String contextId = String.valueOf(counter.getAndIncrement());
 
     private final TaskWorker worker;
-    private final DefaultTaskListenerSupport taskListenerSupport;
+    private final TaskListenerSupport taskListenerSupport;
     private final EventEmitter<TaskListener> localListeners = EventEmitter
         .newEmitter(TaskListener.class, new LoggingExceptionHandler<TaskListener>(log));
 
-    public DefaultTaskContext(TaskWorker worker, DefaultTaskListenerSupport taskListenerSupport) {
+    public DefaultTaskContext(TaskWorker worker, TaskListenerSupport taskListenerSupport) {
         this.worker = worker;
         this.worker.setContext(this);
         this.taskListenerSupport = taskListenerSupport;
@@ -67,9 +67,9 @@ public class DefaultTaskContext implements TaskContext, PropertyChangeListener {
         return worker.getFinishTimestamp();
     }
 
-    public State getState() {
+    public Task.State getState() {
         if (worker.isCancelled()) {
-            return State.CANCELLED;
+            return Task.State.CANCELLED;
         }
         return toState(worker.getState());
     }
@@ -77,7 +77,7 @@ public class DefaultTaskContext implements TaskContext, PropertyChangeListener {
     public int getProgress() {
         return worker.getProgress();
     }
-    
+
     public String getPhase() {
         return worker.getPhase();
     }
@@ -104,7 +104,7 @@ public class DefaultTaskContext implements TaskContext, PropertyChangeListener {
         }
     }
 
-    TaskWorker getWorker() {
+    public <V, C> TaskWorker<V, C> getWorker() {
         return worker;
     }
 
@@ -112,8 +112,8 @@ public class DefaultTaskContext implements TaskContext, PropertyChangeListener {
         return worker.getTask();
     }
 
-    public void fireStateChangeEvent(State oldValue, State newValue) {
-        ChangeEvent<State> e = new DefaultChangeEvent<State>(oldValue, newValue, this);
+    public void fireStateChangeEvent(Task.State oldValue, Task.State newValue) {
+        ChangeEvent<Task.State> e = new DefaultChangeEvent<Task.State>(oldValue, newValue, this);
         taskListenerSupport.fireStateChanged(e);
         localListeners.emitter().stateChanged(e);
     }
@@ -132,16 +132,16 @@ public class DefaultTaskContext implements TaskContext, PropertyChangeListener {
     // ~~ PropertyChangeListener
 
     public void propertyChange(PropertyChangeEvent evt) {
-        if (getTask().getMode() == Mode.SILENT) {
+        if (getTask().getMode() == Task.Mode.SILENT) {
             return;
         }
         if (evt.getPropertyName().equals("state")) {
             UIThreadWorker.StateValue nv = (UIThreadWorker.StateValue) evt.getNewValue();
             if (nv == UIThreadWorker.StateValue.DONE) {
                 if (worker.isError()) {
-                    fireStateChangeEvent(toState(evt.getOldValue()), State.FAILED);
+                    fireStateChangeEvent(toState(evt.getOldValue()), Task.State.FAILED);
                 } else if (worker.isCancelled()) {
-                    fireStateChangeEvent(toState(evt.getOldValue()), State.CANCELLED);
+                    fireStateChangeEvent(toState(evt.getOldValue()), Task.State.CANCELLED);
                 } else {
                     fireStateChangeEvent(toState(evt.getOldValue()), toState(evt.getNewValue()));
                 }
@@ -157,22 +157,22 @@ public class DefaultTaskContext implements TaskContext, PropertyChangeListener {
         }
     }
 
-    private State toState(Object value) {
-        if (value == State.CANCELLED) {
-            return (State) value;
+    private Task.State toState(Object value) {
+        if (value == Task.State.CANCELLED) {
+            return (Task.State) value;
         }
         switch ((UIThreadWorker.StateValue) value) {
             case DONE:
-                return State.DONE;
+                return Task.State.DONE;
             case PENDING:
-                return State.PENDING;
+                return Task.State.PENDING;
             case STARTED:
-                return State.STARTED;
+                return Task.State.STARTED;
         }
         throw new Error("unknown state: " + value);
     }
 
-    
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

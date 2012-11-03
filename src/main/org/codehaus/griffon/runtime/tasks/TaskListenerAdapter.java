@@ -14,27 +14,26 @@
  * limitations under the License.
  */
 
-package griffon.plugins.tasks;
+package org.codehaus.griffon.runtime.tasks;
+
+
+import griffon.plugins.tasks.ChangeEvent;
+import griffon.plugins.tasks.Task;
+import griffon.plugins.tasks.TaskListener;
 
 /**
  * @author <a href="mailto:eike.kettner@gmail.com">Eike Kettner</a>
- * @since 19.07.11 22:45
+ * @since 20.07.11 09:14
  */
-public enum Mode {
-    /**
-     * Like {@link #BACKGROUND} but this task will not
-     * throw any events during execution.
-     */
-    SILENT,
+public class TaskListenerAdapter implements TaskListener {
+    public void stateChanged(ChangeEvent<Task.State> event) {
 
-    /**
-     * Executed in the background. The ui is still
-     * responsive.
-     */
-    BACKGROUND,
+    }
 
-    /**
-     * Blocks the UI while the tasks is executed.
-     */
-    BLOCKING
+    public void progressChanged(ChangeEvent<Integer> event) {
+
+    }
+
+    public void phaseChanged(ChangeEvent<String> event) {
+    }
 }

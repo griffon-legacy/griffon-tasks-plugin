@@ -31,7 +31,6 @@ public interface TaskContext {
      *
      * @return
      */
-
     String getContextId();
 
 
@@ -44,7 +43,7 @@ public interface TaskContext {
     Long getFinishTimestamp();
 
 
-    State getState();
+    Task.State getState();
 
     int getProgress();
 
@@ -63,4 +62,12 @@ public interface TaskContext {
     void addListener(TaskListener listener);
 
     void removeListener(TaskListener listener);
+
+    <V, C> TaskWorker<V, C> getWorker();
+
+    void fireStateChangeEvent(Task.State oldValue, Task.State newValue);
+
+    void fireProgressChangeEvent(Integer oldValue, Integer newValue);
+
+    void firePhaseChangeEvent(String oldValue, String newValue);
 }

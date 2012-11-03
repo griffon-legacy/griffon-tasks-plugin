@@ -16,9 +16,10 @@
 
 package org.codehaus.griffon.runtime.tasks;
 
-import org.codehaus.griffon.runtime.util.AbstractUIThreadWorker;
 import griffon.plugins.tasks.Task;
 import griffon.plugins.tasks.TaskContext;
+import griffon.plugins.tasks.TaskWorker;
+import org.codehaus.griffon.runtime.util.AbstractUIThreadWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,20 +33,18 @@ import java.util.concurrent.ExecutionException;
  * @author <a href="mailto:eike.kettner@gmail.com">Eike Kettner</a>
  * @since 20.07.11 21:23
  */
-public class TaskWorker<V, C> extends AbstractUIThreadWorker<V, C> implements PropertyChangeListener {
-    private final static Logger log = LoggerFactory.getLogger(TaskWorker.class);
+public class DefaultTaskWorker<V, C> extends AbstractUIThreadWorker<V, C> implements PropertyChangeListener, TaskWorker<V, C> {
+    private final static Logger log = LoggerFactory.getLogger(DefaultTaskWorker.class);
 
     private final Task<V, C> task;
 
     private String phase;
     private Long startedTimestamp = null;
     private Long finishedTimestamp = null;
-
     private boolean error = false;
-
     private TaskContext context;
 
-    public TaskWorker(Task<V, C> task) {
+    public DefaultTaskWorker(Task<V, C> task) {
         this.task = task;
         //to have a startedTimestamp set when the first TaskListener
         //gets the started-change, we add this as the first property
@@ -53,13 +52,11 @@ public class TaskWorker<V, C> extends AbstractUIThreadWorker<V, C> implements Pr
         this.addPropertyChangeListener(this);
     }
 
-    
     protected V doInBackground() throws Exception {
         DefaultTracker<C> tracker = new DefaultTracker<C>(this);
         return task.execute(tracker);
     }
 
-    
     protected void process(List<C> chunks) {
         task.process(chunks);
     }
@@ -68,7 +65,6 @@ public class TaskWorker<V, C> extends AbstractUIThreadWorker<V, C> implements Pr
         this.context = context;
     }
 
-    
     protected void done() {
         this.finishedTimestamp = System.currentTimeMillis();
         try {
@@ -120,7 +116,6 @@ public class TaskWorker<V, C> extends AbstractUIThreadWorker<V, C> implements Pr
 
     // ~~ PropertyChangeListener
 
-    
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
             if (evt.getOldValue() instanceof StateValue && evt.getNewValue() instanceof StateValue) {
@@ -133,14 +128,13 @@ public class TaskWorker<V, C> extends AbstractUIThreadWorker<V, C> implements Pr
         }
     }
 
-
     // ~~ delegates from Tracker
 
-    void publishProgress(int progress) {
+    public void publishProgress(int progress) {
         super.setProgress(progress);
     }
 
-    void publishChunks(C... chunks) {
+    public void publishChunks(C... chunks) {
         super.publish(chunks);
     }
 

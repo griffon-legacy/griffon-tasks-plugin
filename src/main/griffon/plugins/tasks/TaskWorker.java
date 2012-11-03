@@ -1,11 +1,11 @@
 /*
- * Copyright 2011 Eike Kettner
+ * Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * 	http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,20 +16,28 @@
 
 package griffon.plugins.tasks;
 
+import griffon.core.Observable;
+import griffon.util.UIThreadWorker;
 
 /**
- * @author <a href="mailto:eike.kettner@gmail.com">Eike Kettner</a>
- * @since 20.07.11 09:14
+ * @author Andres Almiray
  */
-public class TaskListenerAdapter implements TaskListener {
-    public void stateChanged(ChangeEvent<State> event) {
+public interface TaskWorker<V, C> extends Observable, UIThreadWorker<V, C> {
+    Long getStartedTimestamp();
 
-    }
+    Long getFinishTimestamp();
 
-    public void progressChanged(ChangeEvent<Integer> event) {
+    String getPhase();
 
-    }
+    Task<V, C> getTask();
 
-    public void phaseChanged(ChangeEvent<String> event) {
-    }
+    void setContext(TaskContext context);
+
+    boolean isError();
+
+    void publishProgress(int progress);
+
+    void publishChunks(C... chunks);
+
+    void setPhase(String phase);
 }

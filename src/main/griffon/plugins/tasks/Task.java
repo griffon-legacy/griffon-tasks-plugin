@@ -30,7 +30,6 @@ import java.util.List;
  * @since 19.07.11 22:13
  */
 public interface Task<V, C> {
-
     /**
      * A id that identifies this task (or a group of tasks). This doesn't have
      * to be unique among all tasks. It's used to register {@link TaskListener}
@@ -79,4 +78,54 @@ public interface Task<V, C> {
 
 
     Mode getMode();
+
+    /**
+     * @author <a href="mailto:eike.kettner@gmail.com">Eike Kettner</a>
+     * @since 20.07.11 00:27
+     */
+    enum State {
+        PENDING(false),
+        STARTED(false),
+        DONE(true),
+        CANCELLED(true),
+        FAILED(true);
+
+        private final boolean finalState;
+
+        State(boolean finalState) {
+            this.finalState = finalState;
+        }
+
+        public boolean isFinalState() {
+            return finalState;
+        }
+    }
+
+    /**
+     * @author <a href="mailto:eike.kettner@gmail.com">Eike Kettner</a>
+     * @since 19.07.11 22:45
+     */
+    enum Mode {
+        /**
+         * Like {@link #BACKGROUND} but this task will not
+         * throw any events during execution.
+         */
+        SILENT,
+
+        /**
+         * Executed in the background. The ui is still
+         * responsive.
+         */
+        BACKGROUND,
+
+        /**
+         * Blocks the whole UI while the tasks is executed.
+         */
+        BLOCKING_APPLICATION,
+
+        /**
+         * Blocks a single window while the tasks is executed.
+         */
+        BLOCKING_WINDOW
+    }
 }

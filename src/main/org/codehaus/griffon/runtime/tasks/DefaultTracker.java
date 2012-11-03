@@ -17,6 +17,7 @@
 package org.codehaus.griffon.runtime.tasks;
 
 
+import griffon.plugins.tasks.TaskWorker;
 import griffon.plugins.tasks.Tracker;
 
 /**
@@ -24,19 +25,16 @@ import griffon.plugins.tasks.Tracker;
  * @since 20.07.11 21:44
  */
 public class DefaultTracker<C> implements Tracker<C> {
-
     private final TaskWorker<?, C> worker;
 
     public DefaultTracker(TaskWorker<?, C> worker) {
         this.worker = worker;
     }
 
-    
     public void setProgress(int progress) {
         worker.publishProgress(progress);
     }
 
-    
     public void setProgress(int min, int max, int current) {
         if (current <= max && min <= max && current >= min) {
             int distance = max - min;
@@ -48,12 +46,10 @@ public class DefaultTracker<C> implements Tracker<C> {
         }
     }
 
-    
     public void publish(C... chunks) {
         worker.publishChunks(chunks);
     }
 
-    
     public void setPhase(String phase) {
         worker.setPhase(phase);
     }

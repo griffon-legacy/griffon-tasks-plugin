@@ -29,16 +29,18 @@
  * limitations under the License.
  */
 
-package org.codehaus.griffon.runtime.tasks;
-
-import griffon.plugins.tasks.Task;
+package griffon.plugins.tasks;
 
 /**
  * @author <a href="mailto:eike.kettner@gmail.com">Eike Kettner</a>
  * @since 04.09.11 09:41
  */
-public interface Blocker {
+public interface TaskBlocker {
     void block(Task task);
 
     void unblock(Task task);
+
+    TaskManager getTaskManager();
+
+    void setTaskManager(TaskManager taskManager);
 }

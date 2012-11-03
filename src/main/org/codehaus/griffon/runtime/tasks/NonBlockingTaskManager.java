@@ -23,7 +23,7 @@ import griffon.plugins.tasks.Task;
  */
 public class NonBlockingTaskManager extends DefaultTaskManager {
     public NonBlockingTaskManager() {
-        super(new Blocker() {
+        super(new AbstractTaskBlocker() {
             public void block(Task task) {
                 // empty
             }

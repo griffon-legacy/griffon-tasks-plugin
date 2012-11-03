@@ -23,35 +23,36 @@ package griffon.plugins.tasks;
  */
 public class TaskPredicates {
     public static TaskPredicate blockingTasks = new TaskPredicate() {
-        
+
         public boolean apply(TaskControl input) {
-            return input.getContext().getTask().getMode() == Mode.BLOCKING;
+            return input.getContext().getTask().getMode() == Task.Mode.BLOCKING_APPLICATION ||
+                input.getContext().getTask().getMode() == Task.Mode.BLOCKING_WINDOW;
         }
     };
 
     public static TaskPredicate backgroundTasks = new TaskPredicate() {
-        
+
         public boolean apply(TaskControl input) {
-            return input.getContext().getTask().getMode() == Mode.BACKGROUND;
+            return input.getContext().getTask().getMode() == Task.Mode.BACKGROUND;
         }
     };
 
     public static TaskPredicate pendingTasks = new TaskPredicate() {
-        
+
         public boolean apply(TaskControl input) {
-            return input.getContext().getState() == State.PENDING;
+            return input.getContext().getState() == Task.State.PENDING;
         }
     };
 
     public static TaskPredicate startedTasks = new TaskPredicate() {
-        
+
         public boolean apply(TaskControl input) {
-            return input.getContext().getState() == State.STARTED;
+            return input.getContext().getState() == Task.State.STARTED;
         }
     };
 
     public static TaskPredicate allTasks = new TaskPredicate() {
-        
+
         public boolean apply(TaskControl control) {
             return true;
         }

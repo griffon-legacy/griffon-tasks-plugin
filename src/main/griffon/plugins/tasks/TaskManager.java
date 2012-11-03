@@ -28,7 +28,7 @@ public interface TaskManager {
 
     /**
      * Creates a new {@link TaskControl} for a given task. The state is
-     * set to {@link State#PENDING} and the task is not started. That
+     * set to {@link griffon.plugins.tasks.Task.State#PENDING} and the task is not started. That
      * allows to add listeners for this task execution before starting
      * it.
      * <p/>

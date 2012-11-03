@@ -16,7 +16,6 @@
 
 package org.codehaus.griffon.runtime.tasks;
 
-
 import griffon.core.UIThreadManager;
 import griffon.plugins.tasks.*;
 import org.junit.Test;
@@ -41,9 +40,9 @@ public class TaskExecutionTest {
         Task<Long, Long> task = new LongTask();
         final TaskControl<Long> control = manager.create(task);
         control.getContext().addListener(new TaskListener() {
-            public void stateChanged(ChangeEvent<State> event) {
+            public void stateChanged(ChangeEvent<Task.State> event) {
                 log.info(">>> State: " + event.getOldValue() + " => " + event.getNewValue());
-                if (event.getNewValue() == State.STARTED) {
+                if (event.getNewValue() == Task.State.STARTED) {
                     log.info("Started: " + event.getSource().getStartedTimestamp());
                 }
             }

@@ -84,7 +84,7 @@ public abstract class AbstractUIThreadWorker<T, V> extends AbstractObservable im
 
     protected final void setProgress(final int progress) {
         if (progress < 0 || progress > 100) {
-            throw new IllegalArgumentException("the value should be from 0 to 100");
+            throw new IllegalArgumentException("Value should be from 0 to 100");
         }
         if (this.progress == progress) {
             return;

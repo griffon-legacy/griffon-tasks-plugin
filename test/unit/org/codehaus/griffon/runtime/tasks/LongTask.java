@@ -16,7 +16,6 @@
 
 package org.codehaus.griffon.runtime.tasks;
 
-import griffon.plugins.tasks.Mode;
 import griffon.plugins.tasks.Tracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

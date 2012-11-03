@@ -118,8 +118,6 @@ public class EventEmitter<T extends EventListener> implements Iterable<T> {
     }
 
     protected class EventInvocationHandler implements InvocationHandler {
-
-        
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             for (T l : EventEmitter.this) {
                 boolean keeprunning = invokeListener(l, method, args);
@@ -139,5 +137,4 @@ public class EventEmitter<T extends EventListener> implements Iterable<T> {
             }
         }
     }
-
 }

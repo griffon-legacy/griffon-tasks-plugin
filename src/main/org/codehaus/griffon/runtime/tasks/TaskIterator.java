@@ -26,7 +26,6 @@ import java.util.Iterator;
  * @since 21.09.11 21:13
  */
 public class TaskIterator implements Iterator<TaskControl> {
-
     private final Iterator<TaskControl> delegate;
     private final TaskPredicate filter;
 
@@ -37,7 +36,6 @@ public class TaskIterator implements Iterator<TaskControl> {
         this.filter = filter;
     }
 
-    
     public boolean hasNext() {
         if (delegate.hasNext()) {
             this.current = delegate.next();
@@ -46,12 +44,10 @@ public class TaskIterator implements Iterator<TaskControl> {
         return false;
     }
 
-    
     public TaskControl next() {
         return current;
     }
 
-    
     public void remove() {
         delegate.remove();
     }

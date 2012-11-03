@@ -16,9 +16,10 @@
 
 package org.codehaus.griffon.runtime.tasks;
 
-import griffon.plugins.tasks.State;
+import griffon.plugins.tasks.Task;
 import griffon.plugins.tasks.TaskContext;
 import griffon.plugins.tasks.TaskControl;
+import griffon.plugins.tasks.TaskWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,16 +32,15 @@ import java.util.concurrent.ExecutionException;
  */
 public class DefaultTaskControl<V> implements TaskControl<V> {
     private final static Logger log = LoggerFactory.getLogger(DefaultTaskControl.class);
-    private final DefaultTaskContext taskContext;
+    private final TaskContext taskContext;
 
-    public DefaultTaskControl(DefaultTaskContext taskContext) {
+    public DefaultTaskControl(TaskContext taskContext) {
         this.taskContext = taskContext;
     }
 
-    
     public V waitFor() {
         TaskWorker<V, ?> worker = getWorker();
-        if (taskContext.getState() == State.PENDING) {
+        if (taskContext.getState() == Task.State.PENDING) {
             worker.execute();
         }
         try {
@@ -60,21 +60,16 @@ public class DefaultTaskControl<V> implements TaskControl<V> {
         return taskContext.getWorker();
     }
 
-    
     public void execute() {
         getWorker().execute();
     }
 
-    
     public void cancel() {
         log.info("About to cancel task: " + getContext().getContextId());
         getWorker().cancel(true);
     }
 
-
-    
     public TaskContext getContext() {
         return taskContext;
     }
-
 }

@@ -22,7 +22,6 @@ package griffon.plugins.tasks;
  * @since 20.07.11 11:31
  */
 public interface TaskListenerSupport {
-
     /**
      * Add a {@link TaskListener} that receives events for all tasks executed.
      *
@@ -43,4 +42,9 @@ public interface TaskListenerSupport {
 
     void removeListener(String taskId, TaskListener listener);
 
+    void fireStateChanged(ChangeEvent<Task.State> e);
+
+    void fireProgressChanged(ChangeEvent<Integer> e);
+
+    void firePhaseChanged(ChangeEvent<String> e);
 }

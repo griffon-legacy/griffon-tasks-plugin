@@ -43,7 +43,11 @@ public class SwingUIThreadHandler extends AbstractUIThreadHandler {
             } catch (InterruptedException ie) {
                 // ignore
             } catch (InvocationTargetException ite) {
-                throw new RuntimeException(ite.getCause());
+                Throwable t = ite.getCause();
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException) t;
+                }
+                throw new RuntimeException(t);
             }
         }
     }

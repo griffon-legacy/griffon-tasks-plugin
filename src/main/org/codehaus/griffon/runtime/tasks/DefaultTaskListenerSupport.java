@@ -30,25 +30,22 @@ import java.util.Map;
 public class DefaultTaskListenerSupport implements TaskListenerSupport {
     private final static Logger log = LoggerFactory.getLogger(DefaultTaskListenerSupport.class);
 
-    private final LoggingExceptionHandler<TaskListener> loggingExceptionHandler = new LoggingExceptionHandler<TaskListener>(log);
+    private final ExceptionHandler<TaskListener> loggingExceptionHandler = new LoggingExceptionHandler<TaskListener>(log);
     private final Map<String, EventEmitter<TaskListener>> taskListeners = new HashMap<String, EventEmitter<TaskListener>>();
     private final EventEmitter<TaskListener> globalListeners = EventEmitter.newEmitter(TaskListener.class, loggingExceptionHandler);
 
-    
     public void addListener(TaskListener listener) {
         if (listener != null) {
             globalListeners.addListener(listener);
         }
     }
 
-    
     public void removeListener(TaskListener listener) {
         if (listener != null) {
             globalListeners.removeListener(listener);
         }
     }
 
-    
     public void addListener(String taskId, TaskListener listener) {
         if (listener != null) {
             EventEmitter<TaskListener> emitter = getTaskListener(taskId);
@@ -70,7 +67,7 @@ public class DefaultTaskListenerSupport implements TaskListenerSupport {
         return emitter;
     }
 
-    
+
     public void removeListener(String taskId, TaskListener listener) {
         if (listener != null) {
             EventEmitter<TaskListener> emitter = getTaskListener(taskId);
@@ -83,7 +80,7 @@ public class DefaultTaskListenerSupport implements TaskListenerSupport {
     }
 
 
-    public void fireStateChanged(ChangeEvent<State> event) {
+    public void fireStateChanged(ChangeEvent<Task.State> event) {
         Task task = event.getSource().getTask();
         getTaskListener(task.getId()).emitter().stateChanged(event);
         globalListeners.emitter().stateChanged(event);

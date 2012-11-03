@@ -20,55 +20,69 @@ import griffon.plugins.tasks.*;
 
 import java.util.Map;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:eike.kettner@gmail.com">Eike Kettner</a>
  * @since 20.07.11 18:36
  */
 public class DefaultTaskManager implements TaskManager {
-    private final DefaultTaskListenerSupport taskListenerSupport = new DefaultTaskListenerSupport();
+    private final TaskListenerSupport taskListenerSupport;
     private final Map<String, TaskControl> tasks = new ConcurrentHashMap<String, TaskControl>();
+    private final ExecutorService executorService;
 
-    private final ExecutorService executorService = new ThreadPoolExecutor(0, 20,
-        60L, TimeUnit.SECONDS,
-        new SynchronousQueue<Runnable>());
+    public DefaultTaskManager(final TaskBlocker blocker) {
+        taskListenerSupport = createTaskListenerSupport();
 
-    private AtomicInteger blockingCounter = new AtomicInteger(0);
+        blocker.setTaskManager(this);
 
-    public DefaultTaskManager(final Blocker blocker) {
         taskListenerSupport.addListener(new TaskListenerAdapter() {
-
-            public void stateChanged(ChangeEvent<State> event) {
-                final State newState = event.getNewValue();
+            public void stateChanged(ChangeEvent<Task.State> event) {
+                final Task.State newState = event.getNewValue();
                 final String contextId = event.getSource().getContextId();
                 final Task task = event.getSource().getTask();
                 if (newState != null) {
                     if (newState.isFinalState()) {
                         tasks.remove(contextId);
-                        if (task.getMode() == Mode.BLOCKING) {
-                            if (blockingCounter.decrementAndGet() == 0) {
-                                blocker.unblock(task);
-                            }
+                        if (task.getMode() == Task.Mode.BLOCKING_APPLICATION || task.getMode() == Task.Mode.BLOCKING_WINDOW) {
+                            blocker.unblock(task);
                         }
                     }
-                    if (newState == State.STARTED) {
-                        if (task.getMode() == Mode.BLOCKING) {
-                            blockingCounter.incrementAndGet();
+                    if (newState == Task.State.STARTED) {
+                        if (task.getMode() == Task.Mode.BLOCKING_APPLICATION || task.getMode() == Task.Mode.BLOCKING_WINDOW) {
                             blocker.block(task);
                         }
                     }
                 }
             }
         });
+
+        executorService = createExecutorService();
+    }
+
+    protected TaskListenerSupport createTaskListenerSupport() {
+        return new DefaultTaskListenerSupport();
+    }
+
+    protected ThreadPoolExecutor createExecutorService() {
+        return new ThreadPoolExecutor(0, 20,
+            60L, TimeUnit.SECONDS,
+            new SynchronousQueue<Runnable>());
     }
 
     public <V, C> TaskControl<V> create(Task<V, C> task) {
-        DefaultTaskContext context = new DefaultTaskContext(new TaskWorker<V, C>(task), taskListenerSupport);
-        DefaultTaskControl<V> control = new DefaultTaskControl<V>(context);
+        TaskContext context = createTaskContext(task);
+        TaskControl<V> control = createTaskControl(context);
         tasks.put(control.getContext().getContextId(), control);
-        context.fireStateChangeEvent(null, State.PENDING); //must be after the task-control has been added to the map; so listeners can access it
+        context.fireStateChangeEvent(null, Task.State.PENDING); //must be after the task-control has been added to the map; so listeners can access it
         return control;
+    }
+
+    protected <V> TaskControl<V> createTaskControl(TaskContext context) {
+        return new DefaultTaskControl<V>(context);
+    }
+
+    protected <V, C> TaskContext createTaskContext(Task<V, C> task) {
+        return new DefaultTaskContext(new DefaultTaskWorker<V, C>(task), taskListenerSupport);
     }
 
     public TaskListenerSupport getTaskListenerSupport() {
