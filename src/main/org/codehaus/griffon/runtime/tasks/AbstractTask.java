@@ -20,7 +20,6 @@ import griffon.plugins.tasks.Task;
 
 import java.util.List;
 
-
 /**
  * @author <a href="mailto:eike.kettner@gmail.com">Eike Kettner</a>
  * @since 20.07.11 00:40
@@ -42,18 +41,14 @@ public abstract class AbstractTask<V, C> implements Task<V, C> {
         return id;
     }
 
-
     public void done(V value) {
     }
-
 
     public void failed(Throwable cause) {
     }
 
-
     public void process(List<C> chunks) {
     }
-
 
     public Mode getMode() {
         return mode;

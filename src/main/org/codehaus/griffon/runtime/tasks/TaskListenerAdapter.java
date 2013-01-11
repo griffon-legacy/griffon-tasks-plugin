@@ -27,11 +27,9 @@ import griffon.plugins.tasks.TaskListener;
  */
 public class TaskListenerAdapter implements TaskListener {
     public void stateChanged(ChangeEvent<Task.State> event) {
-
     }
 
     public void progressChanged(ChangeEvent<Integer> event) {
-
     }
 
     public void phaseChanged(ChangeEvent<String> event) {

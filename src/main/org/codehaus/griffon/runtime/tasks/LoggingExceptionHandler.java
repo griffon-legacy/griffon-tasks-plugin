@@ -51,10 +51,8 @@ public class LoggingExceptionHandler<T extends EventListener> implements Excepti
         return new LoggingExceptionHandler<T>(log);
     }
 
-
     public boolean handleException(T listener, Throwable t) throws Throwable {
         log.error("Listener '" + listener + "' threw an exception: " + t.getMessage(), t);
         return notifyOtherListeners;
     }
-
 }

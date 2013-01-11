@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.codehaus.griffon.runtime.util;
 import griffon.core.UIThreadManager;
 import griffon.util.UIThreadWorker;
 import org.codehaus.griffon.runtime.core.AbstractObservable;
+import org.codehaus.griffon.runtime.util.ExecutorServiceHolder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +37,7 @@ public abstract class AbstractUIThreadWorker<T, V> extends AbstractObservable im
 
     private static final String KEY_PROGRESS = "progress";
     private static final String KEY_STATE = "state";
-    private static final ExecutorService DEFAULT_EXECUTOR_SERVICE = Executors.newFixedThreadPool(10);
+    private static final ExecutorService DEFAULT_EXECUTOR_SERVICE = ExecutorServiceHolder.add(Executors.newFixedThreadPool(10));
 
     public AbstractUIThreadWorker() {
         Callable<T> callable =

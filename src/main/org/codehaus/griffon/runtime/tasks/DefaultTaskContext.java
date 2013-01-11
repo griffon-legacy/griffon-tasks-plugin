@@ -172,7 +172,6 @@ public class DefaultTaskContext implements TaskContext, PropertyChangeListener {
         throw new Error("unknown state: " + value);
     }
 
-
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

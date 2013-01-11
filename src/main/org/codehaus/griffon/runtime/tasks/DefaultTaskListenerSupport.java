@@ -67,7 +67,6 @@ public class DefaultTaskListenerSupport implements TaskListenerSupport {
         return emitter;
     }
 
-
     public void removeListener(String taskId, TaskListener listener) {
         if (listener != null) {
             EventEmitter<TaskListener> emitter = getTaskListener(taskId);
@@ -78,7 +77,6 @@ public class DefaultTaskListenerSupport implements TaskListenerSupport {
     public EventEmitter<TaskListener> getGlobalListeners() {
         return globalListeners;
     }
-
 
     public void fireStateChanged(ChangeEvent<Task.State> event) {
         Task task = event.getSource().getTask();
